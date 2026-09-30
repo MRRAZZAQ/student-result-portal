@@ -10,6 +10,7 @@ def client():
 def test_health_check(client):
     rv = client.get('/health')
     assert rv.status_code == 200
+    assert b'flask_app_status 1' in rv.data
 
 def test_get_items(client):
     rv = client.get('/items')

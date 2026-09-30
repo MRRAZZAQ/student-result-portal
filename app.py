@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
 
 app = Flask(__name__)
 results = []
@@ -16,7 +16,8 @@ def add_result():
 
 @app.route('/health', methods=['GET'])
 def health_check():
-    return "OK", 200
+    # Prometheus requires metrics in plain text format
+    return Response("flask_app_status 1\n", mimetype="text/plain")
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
