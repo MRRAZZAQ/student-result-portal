@@ -1,0 +1,158 @@
+{
+  "uid": "student-result-portal",
+  "title": "Student Result Portal",
+  "tags": ["flask", "prometheus", "student-result-portal"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "graphTooltip": 1,
+  "refresh": "10s",
+  "time": { "from": "now-30m", "to": "now" },
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Requests per second",
+      "description": "Total HTTP request rate across all endpoints.",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "sum(rate(http_requests_total[1m]))",
+          "legendFormat": "req/s",
+          "editorMode": "code",
+          "range": true
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "reqps", "custom": {} }, "overrides": [] },
+      "options": {}
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Request latency",
+      "description": "50th and 95th percentile response times.",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 0 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "histogram_quantile(0.50, sum by (le) (rate(http_request_duration_seconds_bucket[5m])))",
+          "legendFormat": "p50",
+          "editorMode": "code",
+          "range": true
+        },
+        {
+          "refId": "B",
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket[5m])))",
+          "legendFormat": "p95",
+          "editorMode": "code",
+          "range": true
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "s", "custom": {} }, "overrides": [] },
+      "options": {}
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Requests by status code",
+      "description": "Rate of 200 / 302 / 404 responses.",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 0 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "sum by (status) (rate(http_requests_total[5m]))",
+          "legendFormat": "HTTP {{status}}",
+          "editorMode": "code",
+          "range": true
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "reqps", "custom": {} }, "overrides": [] },
+      "options": {}
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Traffic by endpoint",
+      "description": "Which routes get hit the most.",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 8 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "sum by (endpoint) (rate(http_requests_total[5m]))",
+          "legendFormat": "{{endpoint}}",
+          "editorMode": "code",
+          "range": true
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "reqps", "custom": {} }, "overrides": [] },
+      "options": {}
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Students in portal",
+      "description": "students_total gauge exposed by the app.",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 8 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "students_total",
+          "legendFormat": "students",
+          "editorMode": "code",
+          "range": true
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short", "custom": {}, "min": 0 }, "overrides": [] },
+      "options": {}
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "App target health",
+      "description": "1 = Prometheus can reach the app, 0 = down.",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 8 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "up{job=\"student-result-portal\"}",
+          "legendFormat": "{{instance}}",
+          "editorMode": "code",
+          "range": true
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short", "custom": {}, "min": 0, "max": 1 }, "overrides": [] },
+      "options": {}
+    }
+  ],
+  "templating": { "list": [] },
+  "timepicker": {},
+  "links": []
+}
