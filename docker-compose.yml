@@ -1,5 +1,6 @@
 services:
   web:
+    image: razzaq241a004/student-result-portal:latest
     build: .
     ports:
       - "5000:5000"
