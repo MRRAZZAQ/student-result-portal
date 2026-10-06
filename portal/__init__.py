@@ -7,9 +7,13 @@ from . import auth, db, metrics, results
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
+    if os.environ.get("VERCEL"):
+        db_path = "/tmp/results.sqlite3"
+    else:
+        db_path = os.path.join(app.instance_path, "results.sqlite3")
     app.config.from_mapping(
         SECRET_KEY=os.environ.get("SECRET_KEY", "dev-secret-change-me"),
-        DATABASE=os.path.join(app.instance_path, "results.sqlite3"),
+        DATABASE=db_path,
         ADMIN_USER=os.environ.get("ADMIN_USER", "admin"),
         SESSION_COOKIE_HTTPONLY=True,
         REMEMBER_COOKIE_HTTPONLY=True,
@@ -21,7 +25,7 @@ def create_app(test_config=None):
             os.environ.get("ADMIN_PASSWORD", "admin123")
         )
 
-    os.makedirs(app.instance_path, exist_ok=True)
+    os.makedirs(os.path.dirname(app.config["DATABASE"]), exist_ok=True)
 
     db.init_app(app)
     db.init_db(app)
